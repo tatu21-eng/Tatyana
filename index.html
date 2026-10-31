@@ -1,29 +1,1253 @@
-Ты — опытный учитель английского языка. Мне нужно создать вопросы для интерактивной игры "Крестики-нолики".
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Универсальная Игра: Кибер-портал</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-purple: #b026ff;
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #39ff14;
+            --dark-bg: #0a0a0f;
+            --panel-bg: rgba(10, 10, 20, 0.95);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-ТЕМА: [ВСТАВЬ СВОЮ ТЕМУ, например: Past Simple / Conditionals / Vocabulary: Travel]
-УРОВЕНЬ: [ВСТАВЬ УРОВЕНЬ, например: A2-B1]
-КОЛИЧЕСТВО: 30 вопросов
+        .stars-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: radial-gradient(ellipse at bottom, #1b2735 0%, #0a0a0f 100%); }
+        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes portalGlow { 0%, 100% { box-shadow: 0 0 30px var(--neon-purple), 0 0 60px var(--neon-purple); } 50% { box-shadow: 0 0 50px var(--neon-purple), 0 0 100px var(--neon-blue); } }
+        @keyframes portalSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes planetFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(3deg); } }
+        @keyframes characterFly { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-20px) rotate(3deg); } }
+        @keyframes floating { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        @keyframes characterLand { 0% { transform: translateY(-100px) scale(1.1); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+        @keyframes starBurst { 0% { transform: scale(0) rotate(0deg); opacity: 1; } 100% { transform: scale(2) rotate(180deg); opacity: 0; } }
+        @keyframes floatMessage { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 100% { opacity: 0; transform: translate(-50%, -80%) scale(1); } }
+        @keyframes rocketTrail { 0% { opacity: 0.8; transform: scale(1); } 100% { opacity: 0; transform: scale(0.3); } }
+        @keyframes confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-200px) rotate(720deg); opacity: 0; } }
+        @keyframes glow { 0%, 100% { filter: drop-shadow(0 0 15px rgba(176, 38, 255, 0.6)); } 50% { filter: drop-shadow(0 0 30px rgba(0, 243, 255, 0.9)); } }
+        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        @keyframes planetGlow { 0%, 100% { filter: drop-shadow(0 0 15px rgba(176, 38, 255, 0.6)) drop-shadow(0 0 30px rgba(0, 243, 255, 0.3)); } 50% { filter: drop-shadow(0 0 25px rgba(176, 38, 255, 0.9)) drop-shadow(0 0 50px rgba(0, 243, 255, 0.5)); } }
 
-КРИТИЧЕСКИ ВАЖНО: Выдай вопросы СТРОГО в следующем формате JavaScript-массива. 
-Каждая строка должна выглядеть так:
-"Текст вопроса с пропуском ___,вариант1,вариант2,вариант3,номер_правильного_ответа"
+        .main-wrapper { position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; padding: 10px; }
+        .header { text-align: center; margin-bottom: 15px; animation: fadeInUp 1s ease-out; text-transform: uppercase; letter-spacing: 3px; }
+        .main-title { font-family: 'Orbitron', monospace; font-size: 2em; font-weight: 900; background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue), var(--neon-pink), var(--neon-purple)); background-size: 300% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 5s linear infinite; margin-bottom: 5px; }
+        .header p { font-size: 0.9em; color: var(--neon-blue); font-weight: 600; letter-spacing: 2px; }
 
-Где номер_правильного_ответа — это число 1, 2 или 3.
+        .screen { display: none; animation: fadeInUp 0.6s ease-out; }
+        .screen.active { display: block; }
 
-ПРИМЕР ФОРМАТА:
-const rawQuizData = [
-  "Yesterday I ___ to the cinema.,go,went,gone,2",
-  "She ___ TV when I called.,watched,was watching,has watched,2",
-  "They ___ in London for 5 years.,lived,have lived,are living,2"
+        .card { background: var(--panel-bg); backdrop-filter: blur(20px); border: 2px solid var(--neon-purple); border-radius: 20px; padding: 25px; text-align: center; max-width: 800px; margin: 0 auto 15px; box-shadow: 0 0 40px rgba(176, 38, 255, 0.3); }
+        .name-input { width: 100%; max-width: 350px; padding: 12px 20px; background: rgba(0, 0, 0, 0.6); border: 2px solid var(--neon-blue); border-radius: 12px; color: var(--neon-blue); font-size: 1em; text-align: center; margin-bottom: 15px; font-family: 'Rajdhani', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s; }
+        .name-input:focus { outline: none; border-color: var(--neon-purple); box-shadow: 0 0 30px rgba(176, 38, 255, 0.6); }
+        .btn { padding: 12px 35px; background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-blue) 100%); color: white; border: none; border-radius: 50px; font-family: 'Orbitron', monospace; font-size: 0.95em; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 25px rgba(176, 38, 255, 0.5); margin: 8px; text-transform: uppercase; letter-spacing: 2px; }
+        .btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.05); box-shadow: 0 0 40px rgba(176, 38, 255, 0.8); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-next-small { padding: 10px 20px; font-size: 0.85em; width: 100%; margin: 8px 0 0 0; }
+
+        .character-select { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 15px 0; }
+        .character-card { background: rgba(176, 38, 255, 0.1); border: 2px solid var(--neon-purple); border-radius: 16px; padding: 10px; cursor: pointer; transition: all 0.3s; }
+        .character-card:hover { background: rgba(176, 38, 255, 0.2); border-color: var(--neon-blue); transform: scale(1.05); box-shadow: 0 0 30px rgba(176, 38, 255, 0.4); }
+        .character-card.selected { background: rgba(57, 255, 20, 0.2); border-color: var(--neon-green); box-shadow: 0 0 40px rgba(57, 255, 20, 0.6); }
+        .character-card svg { width: 70px; height: 70px; margin: 0 auto 8px; display: block; animation: bounce 2s ease-in-out infinite; }
+        .character-card h3 { font-family: 'Orbitron', monospace; color: var(--neon-blue); font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; }
+
+        .game-scene { position: relative; height: 350px; margin-bottom: 10px; overflow: visible; background: radial-gradient(ellipse at center, rgba(176, 38, 255, 0.1) 0%, transparent 70%); border: 2px solid rgba(176, 38, 255, 0.3); border-radius: 20px; }
+        .planet-svg { position: absolute; animation: planetFloat 4s ease-in-out infinite; filter: drop-shadow(0 0 15px rgba(176, 38, 255, 0.6)) drop-shadow(0 0 30px rgba(0, 243, 255, 0.3)); animation: planetGlow 3s ease-in-out infinite; }
+        .planet-mercury { left: 5%; bottom: 140px; width: 50px; height: 50px; animation-delay: 0s; }
+        .planet-venus { left: 18%; bottom: 170px; width: 65px; height: 65px; animation-delay: 0.5s; }
+        .planet-earth { left: 32%; bottom: 120px; width: 70px; height: 70px; animation-delay: 1s; }
+        .planet-mars { left: 46%; bottom: 180px; width: 60px; height: 60px; animation-delay: 1.5s; }
+        .planet-jupiter { left: 60%; bottom: 100px; width: 95px; height: 95px; animation-delay: 2s; }
+        .planet-saturn { left: 74%; bottom: 150px; width: 85px; height: 85px; animation-delay: 2.5s; }
+        .planet-uranus { left: 86%; bottom: 190px; width: 75px; height: 75px; animation-delay: 3s; }
+        .planet-neptune { left: 95%; bottom: 130px; width: 70px; height: 70px; animation-delay: 3.5s; }
+
+        .portal { position: absolute; right: 15px; bottom: 100px; width: 65px; height: 100px; border-radius: 45px; background: radial-gradient(ellipse at center, rgba(176, 38, 255, 0.8) 0%, rgba(0, 243, 255, 0.5) 50%, transparent 70%); border: 3px solid var(--neon-purple); animation: portalGlow 2s ease-in-out infinite; z-index: 2; }
+        .portal::before { content: ''; position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px; border-radius: 37px; background: radial-gradient(ellipse at center, rgba(176, 38, 255, 0.9) 0%, transparent 70%); animation: portalSpin 3s linear infinite; }
+        .portal.repaired { background: radial-gradient(ellipse at center, rgba(57, 255, 20, 0.8) 0%, rgba(0, 243, 255, 0.6) 50%, transparent 70%); border-color: var(--neon-green); }
+
+        .player-character { position: absolute; bottom: 80px; left: 5%; width: 150px; height: 150px; z-index: 3; transition: left 1.2s cubic-bezier(0.4, 0, 0.2, 1), bottom 1.2s cubic-bezier(0.4, 0, 0.2, 1); overflow: visible !important; }
+        .player-character svg { width: 100%; height: 100%; overflow: visible !important; animation: glow 2s ease-in-out infinite, breathe 3s ease-in-out infinite; }
+       .player-character.flying { animation: characterFly 1s ease-in-out infinite, floating 2s ease-in-out infinite; }
+        .player-character.landing { animation: characterLand 0.6s ease-out; }
+
+        .rocket-particle { position: absolute; width: 8px; height: 8px; background: radial-gradient(circle, var(--neon-green), var(--neon-blue)); border-radius: 50%; pointer-events: none; animation: rocketTrail 0.8s ease-out forwards; z-index: 2; box-shadow: 0 0 15px var(--neon-green); }
+        .confetti { position: absolute; width: 8px; height: 8px; pointer-events: none; animation: confetti 1.5s ease-out forwards; }
+        .floating-message { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, rgba(176, 38, 255, 0.95), rgba(0, 243, 255, 0.95)); border: 3px solid var(--neon-blue); border-radius: 20px; padding: 20px 40px; font-family: 'Orbitron', monospace; font-size: 1.8em; font-weight: 900; color: white; text-shadow: 0 0 30px rgba(0, 243, 255, 1); box-shadow: 0 0 60px rgba(176, 38, 255, 1); z-index: 1000; animation: floatMessage 2s ease-out forwards; pointer-events: none; text-transform: uppercase; letter-spacing: 3px; }
+        .star-burst { position: fixed; width: 30px; height: 30px; background: radial-gradient(circle, var(--neon-blue), var(--neon-purple)); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); animation: starBurst 1s ease-out forwards; pointer-events: none; z-index: 999; box-shadow: 0 0 30px var(--neon-blue); }
+
+        .task-card { background: var(--panel-bg); backdrop-filter: blur(20px); border: 2px solid var(--neon-purple); border-radius: 20px; padding: 20px; box-shadow: 0 0 40px rgba(176, 38, 255, 0.3); display: grid; grid-template-columns: 420px 1fr; gap: 20px; }
+        .task-left { display: flex; flex-direction: column; gap: 12px; }
+        .task-right { display: flex; flex-direction: column; gap: 12px; }
+        .answers-and-explanation { display: flex; gap: 15px; align-items: flex-start; }
+        .answers-block { flex: 0 0 380px; display: flex; flex-direction: column; gap: 12px; }
+        .explanation-column { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px;
+            flex: 1;
+            min-width: 180px;
+        }
+        .explanation-block { 
+            background: rgba(0, 0, 0, 0.4); 
+            border: 2px solid var(--neon-purple); 
+            border-radius: 12px; 
+            padding: 12px; 
+            display: none;
+            animation: pop 0.4s ease-out;
+            min-height: 80px;
+            flex: 1;
+        }
+        .explanation-block.show { display: block; }
+        .explanation-block.correct { border-color: var(--neon-green); background: rgba(57, 255, 20, 0.1); }
+        .explanation-block.wrong { border-color: var(--neon-pink); background: rgba(255, 0, 255, 0.1); }
+        .explanation-text { 
+            font-family: 'Rajdhani', sans-serif; 
+            font-size: 0.95em; 
+            color: #e2e8f0; 
+            line-height: 1.4; 
+            text-align: left;
+            text-transform: none;
+            font-weight: 600;
+        }
+        .explanation-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.7em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .explanation-label.correct { color: var(--neon-green); background: rgba(57, 255, 20, 0.2); }
+        .explanation-label.wrong { color: var(--neon-pink); background: rgba(255, 0, 255, 0.2); }
+
+        .verb-display { text-align: center; margin: 8px 0; }
+        .verb-v1 { font-family: 'Orbitron', monospace; font-size: 1.6em; color: var(--neon-pink); font-weight: 900; text-shadow: 0 0 30px var(--neon-pink); letter-spacing: 2px; }
+        .sentence-box { background: rgba(0, 0, 0, 0.6); border: 2px solid var(--neon-blue); border-radius: 12px; padding: 15px; text-align: left; transition: all 0.3s; min-height: 80px; display: flex; flex-direction: column; justify-content: center; }
+        .sentence-box:hover { border-color: var(--neon-purple); box-shadow: 0 0 20px rgba(176, 38, 255, 0.4); }
+        .sentence-context { font-size: 1.05em; color: #e2e8f0; font-family: 'Rajdhani', sans-serif; font-weight: 600; line-height: 1.4; }
+        .grammar-label { font-family: 'Orbitron', monospace; font-size: 0.75em; font-weight: 700; margin-bottom: 8px; display: inline-block; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .grammar-label.active { color: var(--neon-blue); background: rgba(0, 243, 255, 0.15); border: 1px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
+
+        .slots-container { display: flex; justify-content: center; gap: 15px; margin: 12px 0; }
+        .verb-slot { min-width: 160px; height: 45px; background: rgba(0, 0, 0, 0.6); border: 2px dashed var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', monospace; font-weight: 700; color: var(--neon-blue); font-size: 0.9em; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .verb-slot.filled { border-style: solid; border-color: var(--neon-blue); background: rgba(0, 243, 255, 0.15); box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
+        .verb-slot.correct { border-color: var(--neon-green); background: rgba(57, 255, 20, 0.2); color: var(--neon-green); animation: pulse 0.5s ease; box-shadow: 0 0 30px rgba(57, 255, 20, 0.6); }
+        .verb-slot.wrong { border-color: var(--neon-pink); background: rgba(255, 0, 255, 0.2); color: var(--neon-pink); animation: shake 0.4s ease; box-shadow: 0 0 30px rgba(255, 0, 255, 0.6); }
+
+        .options-grid { display: grid; gap: 8px; width: 100%; }
+        .options-grid.three-options { grid-template-columns: repeat(3, 1fr); }
+        .options-grid.four-options { grid-template-columns: repeat(2, 1fr); }
+        
+        .option-btn { background: rgba(176, 38, 255, 0.1); border: 2px solid var(--neon-purple); border-radius: 10px; padding: 10px 8px; color: var(--neon-blue); font-family: 'Rajdhani', sans-serif; font-size: 0.95em; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; line-height: 1.3; }
+        .option-btn:hover:not(:disabled) { background: rgba(176, 38, 255, 0.3); border-color: var(--neon-blue); transform: translateY(-2px); box-shadow: 0 0 25px rgba(176, 38, 255, 0.6); }
+        .option-btn.selected { background: var(--neon-blue); color: var(--dark-bg); border-color: var(--neon-blue); box-shadow: 0 0 30px var(--neon-blue); }
+        .option-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .type-input { width: 100%; padding: 14px 15px; background: rgba(0, 0, 0, 0.6); border: 2px solid var(--neon-blue); border-radius: 12px; color: var(--neon-blue); font-family: 'Orbitron', monospace; font-size: 1.1em; font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s; }
+        .type-input:focus { outline: none; border-color: var(--neon-purple); box-shadow: 0 0 30px rgba(176, 38, 255, 0.6); }
+        .type-input::placeholder { color: rgba(0, 243, 255, 0.5); text-transform: none; letter-spacing: 1px; font-size: 0.9em; }
+        .type-input.correct-answer { border-color: var(--neon-green) !important; color: var(--neon-green) !important; box-shadow: 0 0 30px var(--neon-green) !important; }
+
+        .timer-bar { position: sticky; top: 10px; z-index: 100; background: rgba(10, 10, 20, 0.95); border: 2px solid var(--neon-blue); border-radius: 50px; padding: 8px 20px; text-align: center; margin-bottom: 10px; font-family: 'Orbitron', monospace; color: var(--neon-blue); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; gap: 12px; font-size: 1em; box-shadow: 0 0 30px rgba(0, 243, 255, 0.4); text-transform: uppercase; letter-spacing: 2px; }
+        .timer-bar.show { display: flex; }
+
+        .progress-container { position: sticky; top: 60px; z-index: 99; background: var(--panel-bg); border: 2px solid var(--neon-purple); border-radius: 15px; padding: 12px 15px; margin-bottom: 10px; backdrop-filter: blur(12px); box-shadow: 0 0 30px rgba(176, 38, 255, 0.3); }
+        .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-family: 'Orbitron', monospace; color: var(--neon-blue); font-size: 0.9em; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+        .progress-bar-bg { width: 100%; height: 8px; background: rgba(0, 0, 0, 0.6); border-radius: 10px; overflow: hidden; border: 1px solid var(--neon-purple); }
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-purple) 0%, var(--neon-blue) 50%, var(--neon-green) 100%); border-radius: 10px; transition: width 0.5s ease-out; box-shadow: 0 0 20px var(--neon-purple); }
+
+        .back-to-main { position: fixed; top: 15px; left: 15px; width: 45px; height: 45px; background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; box-shadow: 0 0 30px rgba(176, 38, 255, 0.6); transition: all 0.3s; z-index: 100; font-size: 1.3em; border: 2px solid var(--neon-blue); }
+        .back-to-main:hover { transform: scale(1.15); box-shadow: 0 0 40px rgba(176, 38, 255, 0.9); }
+
+        .tab-switch-warning { position: fixed; top: 70px; right: 15px; background: rgba(255, 0, 255, 0.9); border: 2px solid var(--neon-pink); border-radius: 50px; padding: 8px 15px; font-family: 'Orbitron', monospace; font-size: 0.8em; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 30px var(--neon-pink); z-index: 100; display: none; animation: pulse 1s infinite; }
+        .tab-switch-warning.show { display: block; }
+
+        .music-control { position: fixed; bottom: 15px; right: 15px; background: rgba(176, 38, 255, 0.2); border: 2px solid var(--neon-purple); border-radius: 50px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; z-index: 100; backdrop-filter: blur(10px); box-shadow: 0 0 25px rgba(176, 38, 255, 0.4); }
+        .music-btn { background: none; border: none; color: var(--neon-blue); font-size: 1.5em; cursor: pointer; transition: all 0.3s; }
+        .music-btn:hover { transform: scale(1.3); }
+
+        .level-badge { position: fixed; top: 70px; right: 15px; background: linear-gradient(135deg, var(--neon-green), var(--neon-blue)); border: 2px solid var(--neon-green); border-radius: 50px; padding: 8px 20px; font-family: 'Orbitron', monospace; font-size: 0.9em; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 0 30px var(--neon-green); z-index: 100; display: none; animation: pulse 2s infinite; }
+        .level-badge.show { display: block; }
+
+        .bonus-section { margin-top: 15px; padding: 15px; background: rgba(176, 38, 255, 0.1); border: 2px solid var(--neon-purple); border-radius: 16px; }
+        .bonus-title { font-family: 'Orbitron', monospace; color: var(--neon-blue); font-size: 1em; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 2px; }
+        .bonus-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .bonus-option { background: rgba(0, 0, 0, 0.4); border: 2px solid var(--neon-purple); border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.3s; font-family: 'Rajdhani', sans-serif; font-size: 0.9em; color: var(--neon-blue); font-weight: 600; }
+        .bonus-option:hover { background: rgba(176, 38, 255, 0.2); border-color: var(--neon-blue); transform: translateY(-2px); box-shadow: 0 0 20px rgba(176, 38, 255, 0.4); }
+        .bonus-option.selected { background: rgba(57, 255, 20, 0.2); border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 25px rgba(57, 255, 20, 0.5); }
+        .bonus-emoji { font-size: 1.3em; display: block; margin-bottom: 4px; }
+
+        /* === НОВОЕ: Уменьшение персонажа на финальном экране === */
+        #resultCharacter {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        #resultCharacter svg {
+            width: 150px !important;
+            height: 150px !important;
+            max-width: 150px;
+            max-height: 150px;
+        }
+
+        @media (max-width: 900px) {
+            .task-card { grid-template-columns: 1fr; }
+            .answers-and-explanation { flex-direction: column; }
+            .answers-block { flex: 1; width: 100%; max-width: none; }
+            .explanation-column { max-width: 100%; min-width: auto; }
+        }
+
+        @media (max-width: 768px) {
+            .main-wrapper { padding: 5px; }
+            .main-title { font-size: 1.3em; margin-bottom: 3px; }
+            .header p { font-size: 0.8em; margin-bottom: 8px; }
+            .character-select { grid-template-columns: repeat(2, 1fr); }
+            .character-card svg { width: 50px; height: 50px; }
+            .game-scene { height: 220px; margin-bottom: 8px; }
+            .player-character { width: 100px; height: 100px; bottom: 20px; left: 3%; z-index: 10; overflow: visible !important; }
+            .player-character svg { width: 100%; height: 100%; overflow: visible !important; }
+            .planet-mercury { width: 30px; height: 30px; bottom: 100px; }
+            .planet-venus { width: 40px; height: 40px; bottom: 120px; }
+            .planet-earth { width: 45px; height: 45px; bottom: 90px; }
+            .planet-mars { width: 35px; height: 35px; bottom: 130px; }
+            .planet-jupiter { width: 60px; height: 60px; bottom: 70px; }
+            .planet-saturn { width: 50px; height: 50px; bottom: 100px; }
+            .planet-uranus { width: 45px; height: 45px; bottom: 140px; }
+            .planet-neptune { width: 40px; height: 40px; bottom: 90px; }
+            .portal { width: 40px; height: 65px; bottom: 70px; }
+            .verb-v1 { font-size: 1.4em; }
+            .sentence-box { padding: 10px; min-height: 60px; }
+            .sentence-context { font-size: 1em; }
+            .grammar-label { font-size: 0.7em; padding: 3px 10px; }
+            .bonus-options { grid-template-columns: 1fr; }
+            .timer-bar { top: 5px; padding: 5px 12px; font-size: 0.85em; margin-bottom: 5px; }
+            .progress-container { top: 5px; padding: 8px 10px; margin-bottom: 5px; }
+            .progress-info { font-size: 0.8em; }
+            .btn { padding: 8px 20px; font-size: 0.8em; margin: 5px; }
+            .verb-slot { min-width: 140px; height: 40px; font-size: 0.85em; }
+            .type-input { font-size: 1em; padding: 10px; }
+            .option-btn { padding: 8px 6px; font-size: 0.85em; }
+            .back-to-main { width: 40px; height: 40px; top: 10px; left: 10px; font-size: 1.1em; }
+            .music-control { bottom: 10px; right: 10px; padding: 6px 12px; }
+            .level-badge { top: 60px; right: 10px; font-size: 0.8em; padding: 6px 15px; }
+            .tab-switch-warning { top: 60px; right: 10px; font-size: 0.75em; padding: 6px 12px; }
+            .options-grid.three-options { grid-template-columns: 1fr; }
+            #resultCharacter svg { width: 120px !important; height: 120px !important; }
+        }
+
+        @media (max-width: 480px) {
+            .main-title { font-size: 1.1em; }
+            .header p { font-size: 0.7em; }
+            .game-scene { height: 180px; }
+            .player-character { width: 80px; height: 80px; bottom: 15px; left: 3%; z-index: 10; overflow: visible !important; }
+            .planet-mercury { width: 25px; height: 25px; bottom: 80px; }
+            .planet-venus { width: 35px; height: 35px; bottom: 100px; }
+            .planet-earth { width: 38px; height: 38px; bottom: 70px; }
+            .planet-mars { width: 30px; height: 30px; bottom: 110px; }
+            .planet-jupiter { width: 50px; height: 50px; bottom: 60px; }
+            .planet-saturn { width: 42px; height: 42px; bottom: 85px; }
+            .planet-uranus { width: 38px; height: 38px; bottom: 120px; }
+            .planet-neptune { width: 35px; height: 35px; bottom: 75px; }
+            .portal { width: 35px; height: 55px; bottom: 60px; }
+            .verb-v1 { font-size: 1.2em; }
+            .verb-slot { min-width: 120px; height: 36px; font-size: 0.8em; }
+            .type-input { font-size: 0.9em; padding: 8px; }
+            .option-btn { padding: 6px 4px; font-size: 0.8em; }
+            .sentence-context { font-size: 0.95em; }
+            #resultCharacter svg { width: 100px !important; height: 100px !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-bg" id="starsContainer"></div>
+    <a href="../index.html" class="back-to-main" title="Back to main page">←</a>
+    <div class="level-badge" id="levelBadge">Уровень 2: Ввод ответа</div>
+    <div class="tab-switch-warning" id="tabWarning">Смены вкладок: <span id="tabSwitchCount">0</span></div>
+
+    <audio id="bgMusic" loop autoplay>
+        <source src="background-music.mp3" type="audio/mpeg">
+    </audio>
+    <div class="music-control">
+        <button class="music-btn" id="musicToggle" onclick="toggleMusic()">🔊</button>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="header">
+            <h1 class="main-title">Кибер-портал</h1>
+            <p>Универсальная игра для подготовки к экзаменам</p>
+        </div>
+
+        <div class="screen active" id="screen-name">
+            <div class="card">
+                <h2 style="font-family: 'Orbitron', monospace; color: var(--neon-blue); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 3px;">Введите имя</h2>
+                <p style="color: #94a3b8; margin-bottom: 15px; font-size: 1em;">Начните свое космическое путешествие</p>
+                <input type="text" class="name-input" id="studentName" placeholder="ИМЯ КОМАНДИРА">
+                <br>
+                <button class="btn" onclick="goToCharacterSelect()">Начать</button>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-character">
+            <div class="card">
+                <h2 style="font-family: 'Orbitron', monospace; color: var(--neon-blue); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 3px;">Выберите героя</h2>
+                <p style="color: #94a3b8; margin-bottom: 15px; font-size: 0.9em;">Ваш космический напарник</p>
+                
+                <div class="character-select">
+                    <div class="character-card" onclick="selectCharacter('astronaut', this)">
+                        <svg viewBox="0 0 200 200"><circle cx="100" cy="80" r="45" fill="#e9d5ff"/><circle cx="85" cy="70" r="8" fill="#1e293b"/><circle cx="115" cy="70" r="8" fill="#1e293b"/><circle cx="87" cy="68" r="3" fill="#fff"/><circle cx="117" cy="68" r="3" fill="#fff"/><path d="M 92 90 Q 100 96 108 90" stroke="#1e293b" stroke-width="2" fill="none"/><ellipse cx="100" cy="130" rx="35" ry="40" fill="#c084fc"/><circle cx="100" cy="50" r="8" fill="#fbbf24"/><line x1="100" y1="50" x2="100" y2="35" stroke="#c084fc" stroke-width="3"/><ellipse cx="70" cy="120" rx="10" ry="18" fill="#c084fc" transform="rotate(-20 70 120)"/><ellipse cx="130" cy="120" rx="10" ry="18" fill="#c084fc" transform="rotate(20 130 120)"/><ellipse cx="85" cy="170" rx="12" ry="8" fill="#a855f7"/><ellipse cx="115" cy="170" rx="12" ry="8" fill="#a855f7"/></svg>
+                        <h3>Астро-Кот</h3>
+                    </div>
+                    <div class="character-card" onclick="selectCharacter('robot', this)">
+                        <svg viewBox="0 0 200 200"><rect x="70" y="50" width="60" height="50" rx="10" fill="#bfdbfe"/><rect x="75" y="55" width="50" height="30" rx="8" fill="#0f172a"/><circle cx="88" cy="70" r="6" fill="#4ade80"/><circle cx="112" cy="70" r="6" fill="#4ade80"/><rect x="85" y="90" width="30" height="4" rx="2" fill="#4ade80"/><line x1="100" y1="50" x2="100" y2="35" stroke="#60a5fa" stroke-width="3"/><circle cx="100" cy="30" r="5" fill="#f87171"/><rect x="75" y="110" width="50" height="55" rx="8" fill="#60a5fa"/><rect x="55" y="115" width="15" height="35" rx="7" fill="#60a5fa"/><rect x="130" y="115" width="15" height="35" rx="7" fill="#60a5fa"/><rect x="80" y="165" width="15" height="15" rx="5" fill="#3b82f6"/><rect x="105" y="165" width="15" height="15" rx="5" fill="#3b82f6"/></svg>
+                        <h3>Робо-Друг</h3>
+                    </div>
+                    <div class="character-card" onclick="selectCharacter('alien', this)">
+                        <svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="40" ry="50" fill="#4ade80"/><ellipse cx="100" cy="75" rx="50" ry="55" fill="#22c55e"/><ellipse cx="80" cy="70" rx="15" ry="20" fill="#0f172a"/><ellipse cx="120" cy="70" rx="15" ry="20" fill="#0f172a"/><circle cx="82" cy="72" r="8" fill="#fbbf24"/><circle cx="122" cy="72" r="8" fill="#fbbf24"/><circle cx="84" cy="70" r="3" fill="#fff"/><circle cx="124" cy="70" r="3" fill="#fff"/><ellipse cx="100" cy="100" rx="10" ry="6" fill="#0f172a"/><path d="M 60 130 Q 40 140 35 160" stroke="#22c55e" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M 140 130 Q 160 140 165 160" stroke="#22c55e" stroke-width="10" fill="none" stroke-linecap="round"/><ellipse cx="80" cy="180" rx="12" ry="8" fill="#16a34a"/><ellipse cx="120" cy="180" rx="12" ry="8" fill="#16a34a"/></svg>
+                        <h3>Инопланетянин</h3>
+                    </div>
+                    <div class="character-card" onclick="selectCharacter('ninja', this)">
+                        <svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="38" ry="50" fill="#1e293b"/><circle cx="100" cy="75" r="42" fill="#0f172a"/><rect x="58" y="65" width="84" height="14" rx="6" fill="#f87171"/><circle cx="85" cy="72" r="6" fill="#fff"/><circle cx="115" cy="72" r="6" fill="#fff"/><circle cx="85" cy="72" r="3" fill="#0f172a"/><circle cx="115" cy="72" r="3" fill="#0f172a"/><path d="M 142 72 Q 160 65 170 75" stroke="#f87171" stroke-width="5" fill="none"/><ellipse cx="62" cy="130" rx="10" ry="20" fill="#1e293b" transform="rotate(-15 62 130)"/><ellipse cx="138" cy="130" rx="10" ry="20" fill="#1e293b" transform="rotate(15 138 130)"/><line x1="145" y1="125" x2="170" y2="95" stroke="#94a3b8" stroke-width="3"/><ellipse cx="82" cy="180" rx="12" ry="10" fill="#0f172a"/><ellipse cx="118" cy="180" rx="12" ry="10" fill="#0f172a"/></svg>
+                        <h3>Космо-Ниндзя</h3>
+                    </div>
+                    <div class="character-card" onclick="selectCharacter('dragon', this)">
+                        <svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="42" ry="50" fill="#dc2626"/><ellipse cx="100" cy="75" rx="48" ry="52" fill="#fecaca"/><path d="M 65 45 Q 55 25 75 35" fill="#f87171"/><path d="M 135 45 Q 145 25 125 35" fill="#f87171"/><circle cx="82" cy="70" r="10" fill="#fbbf24"/><circle cx="118" cy="70" r="10" fill="#fbbf24"/><circle cx="82" cy="70" r="6" fill="#0f172a"/><circle cx="118" cy="70" r="6" fill="#0f172a"/><circle cx="84" cy="68" r="2" fill="#fff"/><circle cx="120" cy="68" r="2" fill="#fff"/><path d="M 92 95 Q 100 102 108 95" stroke="#0f172a" stroke-width="2" fill="none"/><path d="M 55 120 Q 30 110 35 140" stroke="#dc2626" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M 145 120 Q 170 110 165 140" stroke="#dc2626" stroke-width="10" fill="none" stroke-linecap="round"/><ellipse cx="80" cy="180" rx="14" ry="10" fill="#b91c1c"/><ellipse cx="120" cy="180" rx="14" ry="10" fill="#b91c1c"/></svg>
+                        <h3>Огненный Дракон</h3>
+                    </div>
+                    <div class="character-card" onclick="selectCharacter('pirate', this)">
+                        <svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="40" ry="50" fill="#92400e"/><circle cx="100" cy="75" r="45" fill="#fbbf24"/><path d="M 55 55 Q 100 35 145 55 L 140 68 Q 100 55 60 68 Z" fill="#0f172a"/><circle cx="82" cy="78" r="8" fill="#fff"/><circle cx="118" cy="78" r="8" fill="#fff"/><circle cx="82" cy="78" r="5" fill="#0f172a"/><circle cx="118" cy="78" r="5" fill="#0f172a"/><path d="M 90 95 Q 100 103 110 95" stroke="#0f172a" stroke-width="2" fill="none"/><path d="M 58 130 Q 35 140 30 160" stroke="#92400e" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M 142 130 Q 165 140 170 160" stroke="#92400e" stroke-width="10" fill="none" stroke-linecap="round"/><line x1="165" y1="155" x2="180" y2="135" stroke="#94a3b8" stroke-width="3"/><ellipse cx="82" cy="180" rx="14" ry="10" fill="#78350f"/><ellipse cx="118" cy="180" rx="14" ry="10" fill="#78350f"/></svg>
+                        <h3>Космический Пират</h3>
+                    </div>
+                    <div class="character-card" onclick="selectCharacter('phoenix', this)">
+                        <svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="40" ry="50" fill="#ea580c"/><ellipse cx="100" cy="75" rx="45" ry="50" fill="#f97316"/><circle cx="82" cy="70" r="10" fill="#fbbf24"/><circle cx="118" cy="70" r="10" fill="#fbbf24"/><circle cx="82" cy="70" r="6" fill="#0f172a"/><circle cx="118" cy="70" r="6" fill="#0f172a"/><circle cx="84" cy="68" r="2" fill="#fff"/><circle cx="120" cy="68" r="2" fill="#fff"/><path d="M 95 92 L 100 100 L 105 92 Z" fill="#f97316"/><path d="M 55 55 Q 30 35 45 25 Q 65 45 75 55" fill="#f97316"/><path d="M 145 55 Q 170 35 155 25 Q 135 45 125 55" fill="#f97316"/><path d="M 50 130 Q 25 140 20 165" stroke="#f97316" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M 150 130 Q 175 140 180 165" stroke="#f97316" stroke-width="10" fill="none" stroke-linecap="round"/><ellipse cx="82" cy="180" rx="12" ry="10" fill="#c2410c"/><ellipse cx="118" cy="180" rx="12" ry="10" fill="#c2410c"/></svg>
+                        <h3>Феникс</h3>
+                    </div>
+                    <div class="character-card" onclick="selectCharacter('hero', this)">
+                        <svg viewBox="0 0 200 200"><path d="M 55 85 Q 30 130 40 180 L 65 170 Q 60 130 70 95 Z" fill="#dc2626"/><path d="M 145 85 Q 170 130 160 180 L 135 170 Q 140 130 130 95 Z" fill="#dc2626"/><ellipse cx="100" cy="130" rx="38" ry="50" fill="#2563eb"/><polygon points="100,115 103,125 113,125 105,131 108,141 100,135 92,141 95,131 87,125 97,125" fill="#fbbf24"/><circle cx="100" cy="75" r="45" fill="#dbeafe"/><path d="M 60 60 Q 100 45 140 60 L 140 78 Q 100 68 60 78 Z" fill="#1e293b"/><circle cx="83" cy="70" r="7" fill="#fff"/><circle cx="117" cy="70" r="7" fill="#fff"/><circle cx="83" cy="70" r="4" fill="#0f172a"/><circle cx="117" cy="70" r="4" fill="#0f172a"/><path d="M 90 90 Q 100 97 110 90" stroke="#0f172a" stroke-width="2" fill="none"/><ellipse cx="60" cy="130" rx="10" ry="20" fill="#3b82f6" transform="rotate(-15 60 130)"/><ellipse cx="140" cy="130" rx="10" ry="20" fill="#3b82f6" transform="rotate(15 140 130)"/><ellipse cx="82" cy="180" rx="14" ry="10" fill="#1d4ed8"/><ellipse cx="118" cy="180" rx="14" ry="10" fill="#1d4ed8"/></svg>
+                        <h3>Супергерой</h3>
+                    </div>
+                </div>
+                <button class="btn" id="startGameBtn" onclick="startGame()" disabled>Начать миссию</button>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-game">
+            <div class="timer-bar show" id="timerBar">
+                <span>ВРЕМЯ</span>
+                <span id="timerDisplay">00:00</span>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span>Прогресс портала</span>
+                    <span id="progressText">1 / 20</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+
+            <div class="game-scene" id="gameScene">
+                <svg class="planet-svg planet-mercury" viewBox="0 0 100 100"><defs><radialGradient id="mercury" cx="35%" cy="35%"><stop offset="0%" stop-color="#f3f4f6"/><stop offset="50%" stop-color="#9ca3af"/><stop offset="100%" stop-color="#4b5563"/></radialGradient></defs><circle cx="50" cy="50" r="40" fill="url(#mercury)"/><circle cx="35" cy="40" r="8" fill="#374151" opacity="0.6"/><circle cx="60" cy="55" r="6" fill="#374151" opacity="0.5"/></svg>
+                <svg class="planet-svg planet-venus" viewBox="0 0 100 100"><defs><radialGradient id="venus" cx="35%" cy="35%"><stop offset="0%" stop-color="#fed7aa"/><stop offset="50%" stop-color="#fb923c"/><stop offset="100%" stop-color="#c2410c"/></radialGradient></defs><circle cx="50" cy="50" r="42" fill="url(#venus)"/><circle cx="40" cy="45" r="10" fill="#9a3412" opacity="0.4"/></svg>
+                <svg class="planet-svg planet-earth" viewBox="0 0 100 100"><defs><radialGradient id="earth" cx="35%" cy="35%"><stop offset="0%" stop-color="#bfdbfe"/><stop offset="50%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1e3a8a"/></radialGradient></defs><circle cx="50" cy="50" r="44" fill="url(#earth)"/><path d="M 30 40 Q 40 35 50 45 Q 45 55 35 50 Z" fill="#22c55e" opacity="0.7"/></svg>
+                <svg class="planet-svg planet-mars" viewBox="0 0 100 100"><defs><radialGradient id="mars" cx="35%" cy="35%"><stop offset="0%" stop-color="#fca5a5"/><stop offset="50%" stop-color="#ef4444"/><stop offset="100%" stop-color="#991b1b"/></radialGradient></defs><circle cx="50" cy="50" r="40" fill="url(#mars)"/><circle cx="38" cy="42" r="11" fill="#7f1d1d" opacity="0.5"/></svg>
+                <svg class="planet-svg planet-jupiter" viewBox="0 0 100 100"><defs><radialGradient id="jupiter" cx="35%" cy="35%"><stop offset="0%" stop-color="#fed7aa"/><stop offset="30%" stop-color="#f97316"/><stop offset="60%" stop-color="#d97706"/><stop offset="100%" stop-color="#92400e"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(#jupiter)"/><ellipse cx="50" cy="50" rx="42" ry="5" fill="#f59e0b" opacity="0.35"/><circle cx="60" cy="50" r="10" fill="#dc2626" opacity="0.6"/></svg>
+                <svg class="planet-svg planet-saturn" viewBox="0 0 100 100"><defs><radialGradient id="saturn" cx="35%" cy="35%"><stop offset="0%" stop-color="#fde68a"/><stop offset="50%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#b45309"/></radialGradient></defs><ellipse cx="50" cy="50" rx="55" ry="12" fill="none" stroke="#fbbf24" stroke-width="4" opacity="0.4" transform="rotate(-20 50 50)"/><circle cx="50" cy="50" r="38" fill="url(#saturn)"/></svg>
+                <svg class="planet-svg planet-uranus" viewBox="0 0 100 100"><defs><radialGradient id="uranus" cx="35%" cy="35%"><stop offset="0%" stop-color="#a5f3fc"/><stop offset="50%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#0e7490"/></radialGradient></defs><circle cx="50" cy="50" r="42" fill="url(#uranus)"/><ellipse cx="50" cy="50" rx="50" ry="10" fill="none" stroke="#67e8f9" stroke-width="3" opacity="0.5" transform="rotate(75 50 50)"/></svg>
+                <svg class="planet-svg planet-neptune" viewBox="0 0 100 100"><defs><radialGradient id="neptune" cx="35%" cy="35%"><stop offset="0%" stop-color="#bfdbfe"/><stop offset="50%" stop-color="#2563eb"/><stop offset="100%" stop-color="#1e3a8a"/></radialGradient></defs><circle cx="50" cy="50" r="40" fill="url(#neptune)"/><circle cx="40" cy="45" r="10" fill="#1e40af" opacity="0.5"/></svg>
+                <div class="portal" id="portal"></div>
+                <div class="player-character flying" id="playerCharacter"></div>
+            </div>
+
+            <div class="task-card">
+                <div class="task-left">
+                    <div class="verb-display"><div class="verb-v1" id="keywordDisplay">ТЕМА</div></div>
+                    <div class="sentence-box">
+                        <span class="grammar-label active">Вопрос</span>
+                        <div class="sentence-context" id="questionText">Текст вопроса появится здесь...</div>
+                    </div>
+                </div>
+                <div class="task-right">
+                    <div id="level1Content">
+                        <div class="slots-container">
+                            <div class="verb-slot" id="answerSlot" onclick="clearAnswer()">Ваш ответ: ?</div>
+                        </div>
+                        <div class="answers-and-explanation">
+                            <div class="answers-block">
+                                <div class="options-grid" id="optionsGrid"></div>
+                            </div>
+                            <div class="explanation-column">
+                                <div class="explanation-block" id="explanationBlock">
+                                    <div class="explanation-label" id="explanationLabel">💡 Объяснение</div>
+                                    <div class="explanation-text" id="explanationText"></div>
+                                </div>
+                                <button class="btn btn-next-small" id="nextBtnLevel1" onclick="nextQuestion()" style="display: none;">Далее</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="level2Content" style="display: none; width: 100%;">
+                        <input type="text" class="type-input" id="typeInput" placeholder="Введите ответ..." autocomplete="off">
+                        <div id="correctAnswerDisplay" style="display: none; margin-top: 8px; padding: 8px; background: rgba(57, 255, 20, 0.1); border: 2px solid var(--neon-green); border-radius: 10px; color: var(--neon-green); font-family: 'Orbitron', monospace; font-weight: 700; font-size: 0.9em;"></div>
+                        <div style="display: flex; gap: 10px; margin-top: 12px; align-items: flex-start;">
+                            <div class="explanation-block" id="explanationBlock2" style="flex: 1; margin-top: 0;">
+                                <div class="explanation-label" id="explanationLabel2">💡 Объяснение</div>
+                                <div class="explanation-text" id="explanationText2"></div>
+                            </div>
+                            <button class="btn" id="nextBtnLevel2" onclick="nextQuestion()" style="display: none; margin: 0; white-space: nowrap;">Далее</button>
+                        </div>
+                        <button class="btn" id="checkBtn" onclick="checkAnswer()" style="display: none; width: 100%; margin-top: 12px;">Проверить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-result">
+            <div class="card">
+                <div id="resultCharacter" style="margin-bottom: 10px;"></div>
+                <h2 style="font-family: 'Orbitron', monospace; color: var(--neon-blue); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 3px;">Миссия выполнена!</h2>
+                <p id="finalScore" style="font-size: 1.1em; color: #e2e8f0; margin-bottom: 10px;"></p>
+                <div class="bonus-section" id="bonusSection">
+                    <div class="bonus-title">Выберите бонус</div>
+                    <p style="color: #94a3b8; margin-bottom: 8px; font-size: 0.9em;">Один бонус на следующую проверку:</p>
+                    <div class="bonus-options">
+                       <div class="bonus-option" onclick="selectBonus(this, 'hint')"><span class="bonus-emoji">💡</span>Подсказка на контрольной</div>
+                        <div class="bonus-option" onclick="selectBonus(this, 'no_hw')"><span class="bonus-emoji">🎫</span>Анти-двойка / Без ДЗ</div>
+                        <div class="bonus-option" onclick="selectBonus(this, 'extra_point')"><span class="bonus-emoji">⭐</span>+1 доп. балл</div>
+                        <div class="bonus-option" onclick="selectBonus(this, 'music')"><span class="bonus-emoji">🎵</span>Музыка во время урока</div>
+                    </div>
+                </div>
+                <button class="btn" id="finishBtn" onclick="finishAndSend()" disabled>Завершить и отправить</button>
+                <div class="feedback-msg" id="sendingStatus" style="margin-top: 8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let isExerciseActive = false, tabSwitchCount = 0, musicPlaying = true;
+        
+        function playSound(type) {
+            if (audioContext.state === 'suspended') audioContext.resume();
+            if (type === 'correct') {
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                    const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+                    osc.connect(gain); gain.connect(audioContext.destination); osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioContext.currentTime + i * 0.1);
+                    gain.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.1 + 0.3);
+                    osc.start(audioContext.currentTime + i * 0.1); osc.stop(audioContext.currentTime + i * 0.1 + 0.3);
+                });
+            } else if (type === 'wrong') {
+                const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+                osc.connect(gain); gain.connect(audioContext.destination); osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                osc.start(audioContext.currentTime); osc.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'click' || type === 'select') {
+                const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+                osc.connect(gain); gain.connect(audioContext.destination); osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, audioContext.currentTime);
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                osc.start(audioContext.currentTime); osc.stop(audioContext.currentTime + 0.1);
+            } else if (type === 'teleport') {
+                const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+                osc.connect(gain); gain.connect(audioContext.destination); osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                osc.start(audioContext.currentTime); osc.stop(audioContext.currentTime + 0.5);
+            } else if (type === 'finish') {
+                [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, i) => {
+                    const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+                    osc.connect(gain); gain.connect(audioContext.destination); osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioContext.currentTime + i * 0.15);
+                    gain.gain.setValueAtTime(0.25, audioContext.currentTime + i * 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.15 + 0.4);
+                    osc.start(audioContext.currentTime + i * 0.15); osc.stop(audioContext.currentTime + i * 0.15 + 0.4);
+                });
+            }
+        }
+              function playFlySound() {
+    if (audioContext.state === 'suspended') audioContext.resume();
+    
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    
+    osc.type = 'sine';
+    
+    osc.frequency.setValueAtTime(150, audioContext.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.6);
+    
+    gain.gain.setValueAtTime(0, audioContext.currentTime);
+    gain.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+    
+    osc.start(audioContext.currentTime);
+    osc.stop(audioContext.currentTime + 0.6);
+    
+    // ✅ ИСПРАВЛЕНИЕ: получаем player внутри функции
+    const player = document.getElementById('playerCharacter');
+    if (player) {
+        const rect = player.getBoundingClientRect();
+        createRocketTrail(rect.left + rect.width / 2, rect.top + rect.height);
+    }
+}
+
+        function toggleMusic() {
+            const bg = document.getElementById('bgMusic'), btn = document.getElementById('musicToggle');
+            if (musicPlaying) { bg.pause(); btn.textContent = ''; musicPlaying = false; } 
+            else { bg.play(); btn.textContent = '🔊'; musicPlaying = true; }
+        }
+
+        function createConfetti(x, y) {
+            const colors = ['#b026ff', '#00f3ff', '#ff00ff', '#39ff14', '#fbbf24', '#e9d5ff'];
+            for (let i = 0; i < 25; i++) {
+                const c = document.createElement('div'); c.className = 'confetti';
+                c.style.left = x + 'px'; c.style.top = y + 'px';
+                c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                const angle = (Math.PI * 2 * i) / 25, dist = 50 + Math.random() * 150;
+                c.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+                c.style.setProperty('--ty', Math.sin(angle) * dist - 100 + 'px');
+                document.body.appendChild(c); setTimeout(() => c.remove(), 1500);
+            }
+        }
+        function createRocketTrail(x, y) {
+            for (let i = 0; i < 8; i++) {
+                const p = document.createElement('div'); p.className = 'rocket-particle';
+                p.style.left = (x - 10 + Math.random() * 20) + 'px'; p.style.top = (y + Math.random() * 30) + 'px';
+                document.body.appendChild(p); setTimeout(() => p.remove(), 800);
+            }
+        }
+        function showFloatingMessage(text) {
+            const msg = document.createElement('div'); msg.className = 'floating-message'; msg.textContent = text;
+            document.body.appendChild(msg); setTimeout(() => msg.remove(), 2000);
+        }
+        function createStarBurst(x, y) {
+            for (let i = 0; i < 12; i++) {
+                const s = document.createElement('div'); s.className = 'star-burst';
+                const angle = (Math.PI * 2 * i) / 12, dist = 50 + Math.random() * 80;
+                s.style.left = (x + Math.cos(angle) * dist) + 'px'; s.style.top = (y + Math.sin(angle) * dist) + 'px';
+                document.body.appendChild(s); setTimeout(() => s.remove(), 1000);
+            }
+        }
+
+        const heroSVGs = {
+            astronaut: `<svg viewBox="0 0 200 200"><circle cx="100" cy="80" r="45" fill="#e9d5ff"/><circle cx="85" cy="70" r="8" fill="#1e293b"/><circle cx="115" cy="70" r="8" fill="#1e293b"/><circle cx="87" cy="68" r="3" fill="#fff"/><circle cx="117" cy="68" r="3" fill="#fff"/><path d="M 92 90 Q 100 96 108 90" stroke="#1e293b" stroke-width="2" fill="none"/><ellipse cx="100" cy="130" rx="35" ry="40" fill="#c084fc"/><circle cx="100" cy="50" r="8" fill="#fbbf24"/><line x1="100" y1="50" x2="100" y2="35" stroke="#c084fc" stroke-width="3"/><ellipse cx="70" cy="120" rx="10" ry="18" fill="#c084fc" transform="rotate(-20 70 120)"/><ellipse cx="130" cy="120" rx="10" ry="18" fill="#c084fc" transform="rotate(20 130 120)"/><ellipse cx="85" cy="170" rx="12" ry="8" fill="#a855f7"/><ellipse cx="115" cy="170" rx="12" ry="8" fill="#a855f7"/></svg>`,
+            robot: `<svg viewBox="0 0 200 200"><rect x="70" y="50" width="60" height="50" rx="10" fill="#bfdbfe"/><rect x="75" y="55" width="50" height="30" rx="8" fill="#0f172a"/><circle cx="88" cy="70" r="6" fill="#4ade80"/><circle cx="112" cy="70" r="6" fill="#4ade80"/><rect x="85" y="90" width="30" height="4" rx="2" fill="#4ade80"/><line x1="100" y1="50" x2="100" y2="35" stroke="#60a5fa" stroke-width="3"/><circle cx="100" cy="30" r="5" fill="#f87171"/><rect x="75" y="110" width="50" height="55" rx="8" fill="#60a5fa"/><rect x="55" y="115" width="15" height="35" rx="7" fill="#60a5fa"/><rect x="130" y="115" width="15" height="35" rx="7" fill="#60a5fa"/><rect x="80" y="165" width="15" height="15" rx="5" fill="#3b82f6"/><rect x="105" y="165" width="15" height="15" rx="5" fill="#3b82f6"/></svg>`,
+            alien: `<svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="40" ry="50" fill="#4ade80"/><ellipse cx="100" cy="75" rx="50" ry="55" fill="#22c55e"/><ellipse cx="80" cy="70" rx="15" ry="20" fill="#0f172a"/><ellipse cx="120" cy="70" rx="15" ry="20" fill="#0f172a"/><circle cx="82" cy="72" r="8" fill="#fbbf24"/><circle cx="122" cy="72" r="8" fill="#fbbf24"/><circle cx="84" cy="70" r="3" fill="#fff"/><circle cx="124" cy="70" r="3" fill="#fff"/><ellipse cx="100" cy="100" rx="10" ry="6" fill="#0f172a"/><path d="M 60 130 Q 40 140 35 160" stroke="#22c55e" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M 140 130 Q 160 140 165 160" stroke="#22c55e" stroke-width="10" fill="none" stroke-linecap="round"/><ellipse cx="80" cy="180" rx="12" ry="8" fill="#16a34a"/><ellipse cx="120" cy="180" rx="12" ry="8" fill="#16a34a"/></svg>`,
+            ninja: `<svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="38" ry="50" fill="#1e293b"/><circle cx="100" cy="75" r="42" fill="#0f172a"/><rect x="58" y="65" width="84" height="14" rx="6" fill="#f87171"/><circle cx="85" cy="72" r="6" fill="#fff"/><circle cx="115" cy="72" r="6" fill="#fff"/><circle cx="85" cy="72" r="3" fill="#0f172a"/><circle cx="115" cy="72" r="3" fill="#0f172a"/><path d="M 142 72 Q 160 65 170 75" stroke="#f87171" stroke-width="5" fill="none"/><ellipse cx="62" cy="130" rx="10" ry="20" fill="#1e293b" transform="rotate(-15 62 130)"/><ellipse cx="138" cy="130" rx="10" ry="20" fill="#1e293b" transform="rotate(15 138 130)"/><line x1="145" y1="125" x2="170" y2="95" stroke="#94a3b8" stroke-width="3"/><ellipse cx="82" cy="180" rx="12" ry="10" fill="#0f172a"/><ellipse cx="118" cy="180" rx="12" ry="10" fill="#0f172a"/></svg>`,
+            dragon: `<svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="42" ry="50" fill="#dc2626"/><ellipse cx="100" cy="75" rx="48" ry="52" fill="#fecaca"/><path d="M 65 45 Q 55 25 75 35" fill="#f87171"/><path d="M 135 45 Q 145 25 125 35" fill="#f87171"/><circle cx="82" cy="70" r="10" fill="#fbbf24"/><circle cx="118" cy="70" r="10" fill="#fbbf24"/><circle cx="82" cy="70" r="6" fill="#0f172a"/><circle cx="118" cy="70" r="6" fill="#0f172a"/><circle cx="84" cy="68" r="2" fill="#fff"/><circle cx="120" cy="68" r="2" fill="#fff"/><path d="M 92 95 Q 100 102 108 95" stroke="#0f172a" stroke-width="2" fill="none"/><path d="M 55 120 Q 30 110 35 140" stroke="#dc2626" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M 145 120 Q 170 110 165 140" stroke="#dc2626" stroke-width="10" fill="none" stroke-linecap="round"/><ellipse cx="80" cy="180" rx="14" ry="10" fill="#b91c1c"/><ellipse cx="120" cy="180" rx="14" ry="10" fill="#b91c1c"/></svg>`,
+            pirate: `<svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="40" ry="50" fill="#92400e"/><circle cx="100" cy="75" r="45" fill="#fbbf24"/><path d="M 55 55 Q 100 35 145 55 L 140 68 Q 100 55 60 68 Z" fill="#0f172a"/><circle cx="82" cy="78" r="8" fill="#fff"/><circle cx="118" cy="78" r="8" fill="#fff"/><circle cx="82" cy="78" r="5" fill="#0f172a"/><circle cx="118" cy="78" r="5" fill="#0f172a"/><path d="M 90 95 Q 100 103 110 95" stroke="#0f172a" stroke-width="2" fill="none"/><path d="M 58 130 Q 35 140 30 160" stroke="#92400e" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M 142 130 Q 165 140 170 160" stroke="#92400e" stroke-width="10" fill="none" stroke-linecap="round"/><line x1="165" y1="155" x2="180" y2="135" stroke="#94a3b8" stroke-width="3"/><ellipse cx="82" cy="180" rx="14" ry="10" fill="#78350f"/><ellipse cx="118" cy="180" rx="14" ry="10" fill="#78350f"/></svg>`,
+            phoenix: `<svg viewBox="0 0 200 200"><ellipse cx="100" cy="130" rx="40" ry="50" fill="#ea580c"/><ellipse cx="100" cy="75" rx="45" ry="50" fill="#f97316"/><circle cx="82" cy="70" r="10" fill="#fbbf24"/><circle cx="118" cy="70" r="10" fill="#fbbf24"/><circle cx="82" cy="70" r="6" fill="#0f172a"/><circle cx="118" cy="70" r="6" fill="#0f172a"/><circle cx="84" cy="68" r="2" fill="#fff"/><circle cx="120" cy="68" r="2" fill="#fff"/><path d="M 95 92 L 100 100 L 105 92 Z" fill="#f97316"/><path d="M 55 55 Q 30 35 45 25 Q 65 45 75 55" fill="#f97316"/><path d="M 145 55 Q 170 35 155 25 Q 135 45 125 55" fill="#f97316"/><path d="M 50 130 Q 25 140 20 165" stroke="#f97316" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M 150 130 Q 175 140 180 165" stroke="#f97316" stroke-width="10" fill="none" stroke-linecap="round"/><ellipse cx="82" cy="180" rx="12" ry="10" fill="#c2410c"/><ellipse cx="118" cy="180" rx="12" ry="10" fill="#c2410c"/></svg>`,
+            hero: `<svg viewBox="0 0 200 200"><path d="M 55 85 Q 30 130 40 180 L 65 170 Q 60 130 70 95 Z" fill="#dc2626"/><path d="M 145 85 Q 170 130 160 180 L 135 170 Q 140 130 130 95 Z" fill="#dc2626"/><ellipse cx="100" cy="130" rx="38" ry="50" fill="#2563eb"/><polygon points="100,115 103,125 113,125 105,131 108,141 100,135 92,141 95,131 87,125 97,125" fill="#fbbf24"/><circle cx="100" cy="75" r="45" fill="#dbeafe"/><path d="M 60 60 Q 100 45 140 60 L 140 78 Q 100 68 60 78 Z" fill="#1e293b"/><circle cx="83" cy="70" r="7" fill="#fff"/><circle cx="117" cy="70" r="7" fill="#fff"/><circle cx="83" cy="70" r="4" fill="#0f172a"/><circle cx="117" cy="70" r="4" fill="#0f172a"/><path d="M 90 90 Q 100 97 110 90" stroke="#0f172a" stroke-width="2" fill="none"/><ellipse cx="60" cy="130" rx="10" ry="20" fill="#3b82f6" transform="rotate(-15 60 130)"/><ellipse cx="140" cy="130" rx="10" ry="20" fill="#3b82f6" transform="rotate(15 140 130)"/><ellipse cx="82" cy="180" rx="14" ry="10" fill="#1d4ed8"/><ellipse cx="118" cy="180" rx="14" ry="10" fill="#1d4ed8"/></svg>`
+        };
+
+        const planetPositionsDesktop = [
+            { left: 5, bottom: 140 }, { left: 18, bottom: 170 }, { left: 32, bottom: 120 },
+            { left: 46, bottom: 180 }, { left: 60, bottom: 100 }, { left: 74, bottom: 150 },
+            { left: 86, bottom: 190 }, { left: 95, bottom: 130 }
+        ];
+        const planetPositionsMobile = [
+            { left: 5, bottom: 80 }, { left: 18, bottom: 100 }, { left: 32, bottom: 70 },
+            { left: 46, bottom: 110 }, { left: 60, bottom: 60 }, { left: 74, bottom: 90 },
+            { left: 86, bottom: 120 }, { left: 95, bottom: 75 }
+        ];
+        function getPlanetPositions() { return window.innerWidth <= 768 ? planetPositionsMobile : planetPositionsDesktop; }
+        const planetPositions = getPlanetPositions();
+       const questionDatabase = [
+    {
+        keyword: "Climate Change",
+        question: "Which gas is primarily responsible for global warming?",
+        correct: "carbon dioxide",
+        wrong1: "oxygen",
+        wrong2: "nitrogen",
+        wrong3: "hydrogen",
+        explanation: "Carbon dioxide (CO2) is the main greenhouse gas emitted through human activities like burning fossil fuels."
+    },
+    {
+        keyword: "Energy Sources",
+        question: "Solar, wind, and hydro power are examples of what type of energy?",
+        correct: "renewable energy",
+        wrong1: "fossil fuels",
+        wrong2: "nuclear energy",
+        wrong3: "non-renewable energy",
+        explanation: "Renewable energy comes from natural sources that are constantly replenished and do not run out."
+    },
+    {
+        keyword: "First Conditional",
+        question: "Complete the sentence: 'If we ______ more trees, the air will be cleaner.'",
+        correct: "plant",
+        wrong1: "will plant",
+        wrong2: "planted",
+        wrong3: "would plant",
+        explanation: "In the first conditional, we use the present simple in the 'if' clause to talk about real future possibilities."
+    },
+    {
+        keyword: "Waste Management",
+        question: "What do we call the process of converting waste materials into new materials and objects?",
+        correct: "recycling",
+        wrong1: "landfill",
+        wrong2: "incineration",
+        wrong3: "composting",
+        explanation: "Recycling helps reduce waste by reusing materials like paper, plastic, and glass to make new products."
+    },
+    {
+        keyword: "Ecosystems",
+        question: "What term describes the variety of life in the world or in a particular habitat?",
+        correct: "biodiversity",
+        wrong1: "ecology",
+        wrong2: "conservation",
+        wrong3: "pollution",
+        explanation: "Biodiversity refers to the wide range of different plant, animal, and microorganism species in an ecosystem."
+    },
+    {
+        keyword: "Air Pollution",
+        question: "What is the thick, dirty, and unhealthy fog caused by smoke and chemicals in the air called?",
+        correct: "smog",
+        wrong1: "mist",
+        wrong2: "fog",
+        wrong3: "dust",
+        explanation: "Smog is a type of severe air pollution that is a mixture of smoke and fog, often found in big cities."
+    },
+    {
+        keyword: "Passive Voice",
+        question: "Change to passive: 'People cut down the rainforests.' -> 'The rainforests ______ down.'",
+        correct: "are cut",
+        wrong1: "is cut",
+        wrong2: "were cutting",
+        wrong3: "has cut",
+        explanation: "The present simple passive is formed with 'am/is/are' + past participle. 'Rainforests' is plural, so we use 'are cut'."
+    },
+    {
+        keyword: "Water Pollution",
+        question: "What do we call the contamination of water bodies like rivers and oceans?",
+        correct: "water pollution",
+        wrong1: "soil erosion",
+        wrong2: "air quality",
+        wrong3: "deforestation",
+        explanation: "Water pollution occurs when harmful substances contaminate lakes, rivers, oceans, and groundwater."
+    },
+    {
+        keyword: "Endangered Species",
+        question: "What word describes animals and plants that are at risk of dying out completely?",
+        correct: "endangered",
+        wrong1: "extinct",
+        wrong2: "protected",
+        wrong3: "domestic",
+        explanation: "Endangered species are those that are seriously at risk of extinction due to habitat loss or hunting."
+    },
+    {
+        keyword: "Environmental Collocations",
+        question: "Which verb correctly completes the phrase: 'to ______ a threat to the environment'?",
+        correct: "pose",
+        wrong1: "make",
+        wrong2: "do",
+        wrong3: "give",
+        explanation: "In English, we use the collocation 'pose a threat' to mean presenting a danger to something."
+    },
+    {
+        keyword: "Fossil Fuels",
+        question: "Coal, oil, and natural gas are collectively known as what?",
+        correct: "fossil fuels",
+        wrong1: "renewable resources",
+        wrong2: "green energy",
+        wrong3: "minerals",
+        explanation: "Fossil fuels are non-renewable energy sources formed from the remains of ancient plants and animals."
+    },
+    {
+        keyword: "Modals of Obligation",
+        question: "Which modal verb shows strong necessity? 'We ______ protect the oceans from plastic.'",
+        correct: "must",
+        wrong1: "might",
+        wrong2: "could",
+        wrong3: "would",
+        explanation: "'Must' is used to express strong obligation or necessity, showing that protecting the oceans is essential."
+    },
+    {
+        keyword: "Ozone Layer",
+        question: "What protects the Earth from the sun's harmful ultraviolet (UV) rays?",
+        correct: "the ozone layer",
+        wrong1: "the greenhouse effect",
+        wrong2: "the magnetic field",
+        wrong3: "the atmosphere",
+        explanation: "The ozone layer is a region in the Earth's stratosphere that absorbs most of the sun's UV radiation."
+    },
+    {
+        keyword: "Environmental Collocations",
+        question: "Choose the correct verb: 'We need to ______ our carbon footprint.'",
+        correct: "reduce",
+        wrong1: "make",
+        wrong2: "do",
+        wrong3: "take",
+        explanation: "The standard English collocation is 'reduce our carbon footprint', meaning to decrease the amount of CO2 we produce."
+    },
+    {
+        keyword: "Habitats",
+        question: "What is the natural home or environment of an animal, plant, or other organism called?",
+        correct: "habitat",
+        wrong1: "habitation",
+        wrong2: "habitat loss",
+        wrong3: "ecology",
+        explanation: "A habitat is the specific natural environment where a particular species lives and finds its food and shelter."
+    },
+    {
+        keyword: "Comparatives",
+        question: "Complete the sentence: 'Electric cars are ______ than petrol cars for the environment.'",
+        correct: "better",
+        wrong1: "good",
+        wrong2: "more good",
+        wrong3: "best",
+        explanation: "'Good' is an irregular adjective. Its comparative form is 'better', used to compare two things."
+    },
+    {
+        keyword: "Soil Degradation",
+        question: "What is the process of wearing away the top layer of soil by wind or water called?",
+        correct: "soil erosion",
+        wrong1: "deforestation",
+        wrong2: "desertification",
+        wrong3: "pollution",
+        explanation: "Soil erosion is the removal of the fertile topsoil, often caused by poor farming practices or natural forces."
+    },
+    {
+        keyword: "Plastic Pollution",
+        question: "What do we call the tiny pieces of plastic that pollute the environment and harm wildlife?",
+        correct: "microplastics",
+        wrong1: "bioplastics",
+        wrong2: "polymers",
+        wrong3: "synthetics",
+        explanation: "Microplastics are extremely small plastic particles that result from the breakdown of larger plastic waste."
+    },
+    {
+        keyword: "Environmental Collocations",
+        question: "Which verb correctly completes the phrase: 'to ______ global warming'?",
+        correct: "tackle",
+        wrong1: "solve",
+        wrong2: "finish",
+        wrong3: "close",
+        explanation: "In English, we use the collocation 'tackle a problem' or 'tackle global warming' to mean dealing with a difficult issue."
+    },
+    {
+        keyword: "Acid Rain",
+        question: "What type of precipitation is made acidic by atmospheric pollution like sulfur dioxide?",
+        correct: "acid rain",
+        wrong1: "heavy rain",
+        wrong2: "acid snow",
+        wrong3: "toxic rain",
+        explanation: "Acid rain is rainfall made acidic by atmospheric pollution, which can harm forests, soils, and water bodies."
+    },
+    {
+        keyword: "Second Conditional",
+        question: "Complete: 'If I ______ the president, I would ban all single-use plastics.'",
+        correct: "were",
+        wrong1: "am",
+        wrong2: "will be",
+        wrong3: "would be",
+        explanation: "In the second conditional, we use 'were' for all subjects (including I, he, she) to talk about imaginary situations."
+    },
+    {
+        keyword: "Conservation",
+        question: "What is the protection of plants, animals, and natural areas called?",
+        correct: "conservation",
+        wrong1: "preservation",
+        wrong2: "pollution",
+        wrong3: "exploitation",
+        explanation: "Conservation is the careful management and protection of the natural environment to prevent it from being destroyed."
+    },
+    {
+        keyword: "Waste Disposal",
+        question: "What do we call a place where waste is buried under the earth?",
+        correct: "landfill",
+        wrong1: "dumpster",
+        wrong2: "recycling center",
+        wrong3: "incinerator",
+        explanation: "A landfill is a designated area where large amounts of waste material are buried in the ground."
+    },
+    {
+        keyword: "Phrasal Verbs",
+        question: "Which verb correctly completes the phrase: 'to ______ away waste'?",
+        correct: "throw",
+        wrong1: "put",
+        wrong2: "give",
+        wrong3: "send",
+        explanation: "The correct phrasal verb for disposing of rubbish is 'throw away'."
+    },
+    {
+        keyword: "Climate Change",
+        question: "What is the long-term rise in the average temperature of the Earth called?",
+        correct: "global warming",
+        wrong1: "climate change",
+        wrong2: "greenhouse effect",
+        wrong3: "ozone depletion",
+        explanation: "Global warming specifically refers to the increase in the Earth's average surface temperature due to rising greenhouse gases."
+    },
+    {
+        keyword: "Relative Clauses",
+        question: "Choose the correct relative pronoun: 'Plastic is a material ______ takes hundreds of years to decompose.'",
+        correct: "which",
+        wrong1: "who",
+        wrong2: "whose",
+        wrong3: "whom",
+        explanation: "We use 'which' or 'that' for things and animals. 'Plastic' is a material (a thing), so 'which' is correct."
+    },
+    {
+        keyword: "Land Degradation",
+        question: "What is the process by which fertile land becomes desert called?",
+        correct: "desertification",
+        wrong1: "deforestation",
+        wrong2: "urbanization",
+        wrong3: "industrialization",
+        explanation: "Desertification is the process where land becomes arid and loses its vegetation, often due to climate change and human activity."
+    },
+    {
+        keyword: "Word Formation",
+        question: "What is the noun form of the verb 'pollute'?",
+        correct: "pollution",
+        wrong1: "pollutant",
+        wrong2: "polluter",
+        wrong3: "polluting",
+        explanation: "'Pollution' is the noun referring to the presence of harmful substances in the environment."
+    },
+    {
+        keyword: "Extinction",
+        question: "What word means that a species no longer exists anywhere on Earth?",
+        correct: "extinct",
+        wrong1: "endangered",
+        wrong2: "rare",
+        wrong3: "missing",
+        explanation: "When a species is extinct, every individual of that species has died, and it no longer exists on the planet."
+    },
+    {
+        keyword: "Quantifiers",
+        question: "Choose the correct quantifier: 'There is too ______ plastic in the ocean.'",
+        correct: "much",
+        wrong1: "many",
+        wrong2: "few",
+        wrong3: "little",
+        explanation: "'Plastic' is an uncountable noun, so we use 'much' instead of 'many' to express a large quantity."
+    }
 ];
 
-📋 ТРЕБОВАНИЯ:
-1. В каждом вопросе должен быть один пропуск, обозначенный как ___
-2. Три варианта ответа (A, B, C)
-3. Правильный ответ указан числом (1, 2 или 3)
-4. Вопросы должны быть интересными и жизненными
-5. НЕ добавляй никаких пояснений, только код!
-6. НЕ используй кавычки внутри вопросов
-7. НЕ добавляй переносы строк внутри вопросов
+        let studentName = '', selectedCharacter = null, currentQuestions = [], currentIndex = 0, score = 0;
+        let startTime = null, timerInterval = null, selectedAnswer = null, currentPlanetIndex = 0;
+        let questionsPerPlanet = 5, currentLevel = 1, selectedBonus = null, errorsList = [];
+        const encouragingMessages = ["ОТЛИЧНО!", "ТАК ДЕРЖАТЬ!", "ПОТРЯСАЮЩЕ!", "ИДЕАЛЬНО!", "МОЛОДЕЦ!", "БЛЕСТЯЩЕ!", "СУПЕР!", "ВЕРНО!"];
+        // === НОВАЯ ФУНКЦИЯ: Равномерное движение к порталу ===
+              // === НОВАЯ ФУНКЦИЯ: Движение от планеты к планете с парением ===
+       function updateCharacterPosition() {
+    const player = document.getElementById('playerCharacter');
+    const totalQ = currentQuestions.length;
+    const totalPlanets = planetPositions.length;
+    
+    // Рассчитываем прогресс от 0 до 1
+    const progress = totalQ > 1 ? (currentIndex / (totalQ - 1)) : 0;
+    
+    // Индекс текущей "виртуальной" планеты (может быть дробным)
+    const virtualPlanetIndex = progress * (totalPlanets - 1);
+    const planetIndex = Math.floor(virtualPlanetIndex);
+    const planetFraction = virtualPlanetIndex - planetIndex;
+    
+    // Получаем позиции текущей и следующей планеты
+    const currentPlanet = planetPositions[Math.min(planetIndex, totalPlanets - 1)];
+    const nextPlanet = planetPositions[Math.min(planetIndex + 1, totalPlanets - 1)];
+    
+    // Интерполируем между планетами (плавное движение по траектории)
+    const left = currentPlanet.left + (nextPlanet.left - currentPlanet.left) * planetFraction;
+    const bottom = currentPlanet.bottom + (nextPlanet.bottom - currentPlanet.bottom) * planetFraction;
+    
+    // Применяем позицию
+    player.style.left = left + '%';
+    player.style.bottom = bottom + 'px';
+}
+        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
 
-Сгенерируй 30 вопросов в этом точном формате прямо сейчас.
+        function goToCharacterSelect() {
+            const nameInput = document.getElementById('studentName');
+            studentName = nameInput.value.trim();
+            if (studentName === '') {
+                nameInput.style.borderColor = 'var(--neon-pink)';
+                nameInput.style.animation = 'shake 0.4s ease';
+                setTimeout(() => { nameInput.style.borderColor = ''; nameInput.style.animation = ''; }, 400);
+                alert('Пожалуйста, введите имя!'); return;
+            }
+            if (audioContext.state === 'suspended') audioContext.resume();
+            playSound('click'); showScreen('screen-character');
+        }
+
+        function selectCharacter(char, element) {
+            playSound('select'); selectedCharacter = char;
+            document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('startGameBtn').disabled = false;
+            document.getElementById('startGameBtn').textContent = 'Начать миссию';
+        }
+
+        function startGame() {
+            playSound('teleport'); 
+            showScreen('screen-game');
+            document.getElementById('playerCharacter').innerHTML = heroSVGs[selectedCharacter];
+            
+            const count = Math.min(20, questionDatabase.length);
+            currentQuestions = shuffle([...questionDatabase]).slice(0, count);
+            
+            currentIndex = 0; score = 0; currentPlanetIndex = 0; currentLevel = 1;
+            isExerciseActive = true; tabSwitchCount = 0; errorsList = [];
+            startTime = Date.now(); timerInterval = setInterval(updateTimer, 1000);
+            updateProgress();
+            loadQuestion();
+        }
+
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('timerDisplay').textContent = 
+                `${Math.floor(elapsed / 60).toString().padStart(2, '0')}:${(elapsed % 60).toString().padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            document.getElementById('progressText').textContent = `${currentIndex} / ${currentQuestions.length}`;
+            document.getElementById('progressBarFill').style.width = `${((currentIndex) / currentQuestions.length) * 100}%`;
+        }
+
+        function loadQuestion() {
+            const q = currentQuestions[currentIndex];
+            
+            if (currentIndex >= Math.ceil(currentQuestions.length / 2) && currentLevel === 1) {
+                currentLevel = 2;
+                document.getElementById('levelBadge').classList.add('show');
+                document.getElementById('level1Content').style.display = 'none';
+                document.getElementById('level2Content').style.display = 'block';
+                showFloatingMessage("УРОВЕНЬ 2: ВВОД ОТВЕТА!");
+            }
+            
+            document.getElementById('keywordDisplay').textContent = q.keyword;
+            document.getElementById('questionText').textContent = q.question;
+            
+            selectedAnswer = null;
+            document.getElementById('portal').classList.remove('repaired');
+            document.getElementById('correctAnswerDisplay').style.display = 'none';
+            
+            document.getElementById('explanationBlock').classList.remove('show', 'correct', 'wrong');
+            document.getElementById('explanationBlock2').classList.remove('show', 'correct', 'wrong');
+            document.getElementById('nextBtnLevel1').style.display = 'none';
+            document.getElementById('nextBtnLevel2').style.display = 'none';
+            
+                            const player = document.getElementById('playerCharacter');
+            
+            // Вызываем новую функцию равномерного движения
+            updateCharacterPosition();
+            
+            // Персонаж продолжает лететь, не приземляясь
+            player.classList.remove('landing');
+            player.classList.add('flying');
+            
+            if (currentLevel === 1) {
+                document.getElementById('answerSlot').textContent = 'Ваш ответ: ?';
+                document.getElementById('answerSlot').className = 'verb-slot';
+                document.getElementById('checkBtn').style.display = 'none';
+                
+                let options = [q.correct, q.wrong1, q.wrong2];
+                if (q.wrong3) {
+                    options.push(q.wrong3);
+                }
+                options = shuffle(options);
+                
+                const grid = document.getElementById('optionsGrid'); 
+                grid.innerHTML = '';
+                grid.className = 'options-grid ' + (options.length === 4 ? 'four-options' : 'three-options');
+                
+                options.forEach((opt) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn'; btn.textContent = opt;
+                    btn.dataset.value = opt;
+                    btn.onclick = () => selectOption(opt, btn);
+                    grid.appendChild(btn);
+                });
+            } else {
+                document.getElementById('typeInput').value = '';
+                document.getElementById('typeInput').style.borderColor = 'var(--neon-blue)';
+                document.getElementById('typeInput').style.boxShadow = 'none';
+                document.getElementById('typeInput').classList.remove('correct-answer');
+                document.getElementById('correctAnswerDisplay').style.display = 'none';
+                document.getElementById('checkBtn').style.display = 'inline-block';
+                setTimeout(() => document.getElementById('typeInput').focus(), 100);
+            }
+        }
+
+        function selectOption(value, btnElement) {
+            if (document.getElementById('nextBtnLevel1').style.display === 'inline-block') return;
+            playSound('select');
+            
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            selectedAnswer = value;
+            btnElement.classList.add('selected');
+            
+            document.getElementById('answerSlot').textContent = `Ответ: ${selectedAnswer}`;
+            document.getElementById('answerSlot').className = 'verb-slot filled';
+            
+            setTimeout(() => { checkAnswer(); }, 400);
+        }
+
+        function clearAnswer() {
+            if (document.getElementById('nextBtnLevel1').style.display === 'inline-block') return;
+            playSound('click');
+            selectedAnswer = null;
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('answerSlot').textContent = 'Ваш ответ: ?';
+            document.getElementById('answerSlot').className = 'verb-slot';
+        }
+
+        function checkAnswer() {
+            const q = currentQuestions[currentIndex];
+            let isCorrect = false;
+            
+            if (currentLevel === 1) {
+                const slot = document.getElementById('answerSlot');
+                if (selectedAnswer.trim().toLowerCase() === q.correct.trim().toLowerCase()) {
+                    isCorrect = true;
+                    slot.classList.add('correct');
+                } else {
+                    slot.classList.add('wrong');
+                    errorsList.push({ question: q.keyword, studentAnswer: selectedAnswer, correctAnswer: q.correct });
+                }
+                
+                const explanationBlock = document.getElementById('explanationBlock');
+                const explanationLabel = document.getElementById('explanationLabel');
+                const explanationText = document.getElementById('explanationText');
+                const nextBtn = document.getElementById('nextBtnLevel1');
+                
+                explanationBlock.classList.add('show');
+                explanationBlock.classList.remove('correct', 'wrong');
+                explanationBlock.classList.add(isCorrect ? 'correct' : 'wrong');
+                
+                explanationLabel.textContent = isCorrect ? '✅ Верно!' : '❌ Неверно';
+                explanationLabel.className = 'explanation-label ' + (isCorrect ? 'correct' : 'wrong');
+                explanationText.textContent = q.explanation || 'Объяснение не добавлено';
+                
+                nextBtn.style.display = isCorrect ? 'none' : 'block';
+                
+            } else {
+                const input = document.getElementById('typeInput');
+                const answer = input.value.trim().toLowerCase();
+                const correctAnswer = q.correct.trim().toLowerCase();
+                
+                if (answer === correctAnswer) {
+                    isCorrect = true; 
+                    input.style.borderColor = 'var(--neon-green)'; 
+                    input.style.boxShadow = '0 0 30px var(--neon-green)';
+                } else {
+                    input.style.borderColor = 'var(--neon-pink)'; 
+                    input.style.boxShadow = '0 0 30px var(--neon-pink)';
+                    errorsList.push({ question: q.keyword, studentAnswer: answer || '(пусто)', correctAnswer: q.correct });
+                    const correctDisplay = document.getElementById('correctAnswerDisplay');
+                    correctDisplay.style.display = 'block'; 
+                    correctDisplay.textContent = `Правильно: ${q.correct}`;
+                    input.value = q.correct; 
+                    input.classList.add('correct-answer');
+                }
+                
+                const explanationBlock = document.getElementById('explanationBlock2');
+                const explanationLabel = document.getElementById('explanationLabel2');
+                const explanationText = document.getElementById('explanationText2');
+                const nextBtn = document.getElementById('nextBtnLevel2');
+                
+                explanationBlock.classList.add('show');
+                explanationBlock.classList.remove('correct', 'wrong');
+                explanationBlock.classList.add(isCorrect ? 'correct' : 'wrong');
+                
+                explanationLabel.textContent = isCorrect ? '✅ Верно!' : ' Неверно';
+                explanationLabel.className = 'explanation-label ' + (isCorrect ? 'correct' : 'wrong');
+                explanationText.textContent = q.explanation || 'Объяснение не добавлено';
+                
+                nextBtn.style.display = isCorrect ? 'none' : 'inline-block';
+                document.getElementById('checkBtn').style.display = 'none';
+            }
+            
+            if (isCorrect) {
+                score++;
+                updateProgress();
+                document.getElementById('portal').classList.add('repaired');
+                const player = document.getElementById('playerCharacter');
+                player.classList.remove('landing');
+                player.classList.add('flying');
+                const rect = player.getBoundingClientRect();
+                createRocketTrail(rect.left + rect.width / 2, rect.top + rect.height);
+                playSound('correct');
+                showFloatingMessage(encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)]);
+                createStarBurst(rect.left + rect.width / 2, rect.top);
+                createConfetti(rect.left + rect.width / 2, rect.top);
+                setTimeout(() => { nextQuestion(); }, 2500);
+            } else {
+                playSound('wrong');
+                document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+            }
+        }
+
+                    function nextQuestion() {
+            playSound('click'); 
+            currentIndex++;
+            updateProgress();
+            
+            if (currentIndex < currentQuestions.length) {
+                // Проигрываем звук полета только если это не самый первый старт
+                if (currentIndex > 0) {
+                    playFlySound();
+                }
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+        function selectBonus(element, bonusType) {
+            playSound('select');
+            document.querySelectorAll('.bonus-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected'); selectedBonus = bonusType;
+            document.getElementById('finishBtn').disabled = false;
+            const bonusNames = { 'hint': 'Подсказка на контрольной', 'no_hw': 'Анти-двойка / Без ДЗ', 'extra_point': '+1 доп. балл', 'music': 'Музыка на перемене' };
+            document.getElementById('finishBtn').textContent = `Подтвердить: ${bonusNames[bonusType]}`;
+        }
+
+        function showResults() {
+            showScreen('screen-result');
+            document.getElementById('resultCharacter').innerHTML = heroSVGs[selectedCharacter];
+            playSound('finish');
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => { createConfetti(Math.random() * window.innerWidth, Math.random() * window.innerHeight); }, i * 200);
+            }
+            const percentage = Math.round((score / currentQuestions.length) * 100);
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const timeSpent = `${Math.floor(elapsed / 60)}м ${elapsed % 60}с`;
+            let message = percentage === 100 ? 'ИДЕАЛЬНО! Ты настоящий эксперт!' : 
+                          percentage >= 80 ? 'Отличная работа! Почти без ошибок!' : 
+                          percentage >= 60 ? 'Хороший результат! Продолжай тренироваться!' : 'Не сдавайся! Практика — ключ к успеху!';
+            document.getElementById('finalScore').innerHTML = `${message}<br><br>Активировано порталов: <b>${score} из ${currentQuestions.length}</b><br>Точность: <b>${percentage}%</b><br>Время: <b>${timeSpent}</b><br>Смены вкладок: <b>${tabSwitchCount}</b>`;
+            selectedBonus = null;
+            document.querySelectorAll('.bonus-option').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById('finishBtn').disabled = true;
+            document.getElementById('finishBtn').textContent = 'Завершить и отправить';
+            localStorage.setItem('cyber_portal_completed', 'true');
+        }
+
+        async function finishAndSend() {
+            if (!selectedBonus) { alert('Пожалуйста, выберите бонус!'); return; }
+            const statusDiv = document.getElementById('sendingStatus');
+            statusDiv.style.display = 'block'; statusDiv.innerHTML = 'ОТПРАВКА РЕЗУЛЬТАТОВ...';
+            const percentage = Math.round((score / currentQuestions.length) * 100);
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const timeSpent = `${Math.floor(elapsed / 60)} мин ${elapsed % 60} сек`;
+            const bonusNames = { 'hint': 'Подсказка на контрольной', 'no_hw': 'Анти-двойка / Без ДЗ', 'extra_point': '+1 доп. балл', 'music': 'Музыка на перемене' };
+            let errorsText = errorsList.length > 0 ? errorsList.map((e, idx) => `${idx + 1}. ${e.question}: ответ ученика "${e.studentAnswer}", верно: "${e.correctAnswer}"`).join('\n') : 'Ошибок нет! Идеальная работа!';
+            
+            const payload = { 
+                student_name: studentName, score: `${score}/${currentQuestions.length}`, percentage: `${percentage}%`, 
+                time: new Date().toLocaleString(), exercise_name: "Универсальная Игра: Кибер-портал", time_spent: timeSpent, 
+                tab_switches: tabSwitchCount === 0 ? '0' : `${tabSwitchCount}`,
+                selected_bonus: bonusNames[selectedBonus] || 'Не выбран',
+                errors_text: `БОНУС: ${bonusNames[selectedBonus]}\n\nОШИБКИ:\n${errorsText}`
+            };
+            
+            const POWER_AUTOMATE_URL = 'https://default50bef10a64ce4efab7ceef7facd9c8.97.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/06/workflows/db051d19d6ad49db826ea17f31de68aa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=IhZ_zFXl2whxWZMOaBP47dSJrL6xkew72NkSvNCTcO0';
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrElX954EmAhDdhbsvfcLDGN0T94X5daFDAM5Ny34sJ7acNMaH8mqNiWk5x0xk_XdI5w/exec';
+            
+            try {
+                await fetch(POWER_AUTOMATE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                statusDiv.innerHTML += '<br>✅ ОТПРАВЛЕНО В TEAMS!'; statusDiv.style.color = 'var(--neon-green)';
+            } catch (error) { 
+                statusDiv.innerHTML += '<br>❌ Ошибка Teams'; statusDiv.style.color = 'var(--neon-pink)'; 
+            }
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                statusDiv.innerHTML += '<br>✅ ОТПРАВЛЕНО В GOOGLE SHEETS!';
+            } catch (e) { console.log('Sheets error:', e); }
+            
+            setTimeout(() => {
+                alert(`Миссия выполнена, ${studentName}!\n\nТвой бонус: ${bonusNames[selectedBonus]}\n\nРезультаты отправлены учителю.`);
+                window.location.href = '../index.html';
+            }, 3000);
+        }
+
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div'); star.classList.add('star');
+                star.style.left = Math.random() * 100 + '%'; star.style.top = Math.random() * 100 + '%';
+                const size = Math.random() * 3 + 1; star.style.width = size + 'px'; star.style.height = size + 'px';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                container.appendChild(star);
+            }
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (!isExerciseActive) return;
+            if (document.hidden) {
+                tabSwitchCount++;
+                document.getElementById('tabSwitchCount').textContent = tabSwitchCount;
+                document.getElementById('tabWarning').classList.add('show');
+                setTimeout(() => { document.getElementById('tabWarning').classList.remove('show'); }, 3000);
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.volume = 0.3;
+            bgMusic.play().catch(e => console.log('Autoplay blocked:', e));
+            let musicStarted = false;
+            function startMusic() {
+                if (!musicStarted && bgMusic.paused) {
+                    bgMusic.play().then(() => {
+                        musicStarted = true;
+                        document.getElementById('musicToggle').textContent = '';
+                    }).catch(e => console.log('Music start failed:', e));
+                    document.removeEventListener('click', startMusic);
+                    document.removeEventListener('touchstart', startMusic);
+                    document.removeEventListener('keydown', startMusic);
+                }
+            }
+            document.addEventListener('click', startMusic);
+            document.addEventListener('touchstart', startMusic);
+            document.addEventListener('keydown', startMusic);
+            
+            if (localStorage.getItem('cyber_portal_completed') === 'true') {
+                const badge = document.createElement('div');
+                badge.style.cssText = 'position: fixed; top: 20px; right: 20px; background: rgba(57, 255, 20, 0.2); color: var(--neon-green); border: 2px solid var(--neon-green); padding: 10px 20px; border-radius: 50px; font-family: Orbitron, monospace; font-weight: 900; z-index: 1000; text-transform: uppercase; letter-spacing: 2px;';
+                badge.innerHTML = 'ВЫПОЛНЕНО';
+                document.body.appendChild(badge);
+            }
+        });
+    </script>
+</body>
+</html>
